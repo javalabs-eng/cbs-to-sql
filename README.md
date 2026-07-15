@@ -31,35 +31,126 @@ The tool is intended to support data migration, database modernization, schema d
 
 To see the available commands:
 
-```bash
-help
+```sh
+sh cbs2sql
 ```
 
 To view the usage of a specific command:
 
-```bash
-<command> help
+```
+<cbs2sql> 
+###################################################################################
+#                                                                                 #
+#                         Couchbase To SQL Migration                              #
+#                                                                                 #
+# Commands:                                                                       #
+#                                                                                 #
+#  gen-schema          Generate the sql schema from couchbase doc                 #
+#  cb-export           Export the document and dump it to a local file            #
+#  cb-import           Import the documents to destination couchbase db           #
+#                                                                                 #
+###################################################################################
+
+Type "help" to see the available commands
+Use "command help" for usage of "command". [Example: <command> help]
+
 ```
 
-Example:
+Example 1:
 
-```bash
+```sh
 cb-export help
+```
+
+```
+<cbs2sql> cb-export help
+
+Description                        : Export the documents of the remote couchbase db, as-is
+Usage                              : cb-export [OPTIONS] ...
+Example                            : cb-export -c cluster_1 -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource -s travel -l booking -d dataset_1,dataset_2 -n type -o /tmp
+
+The options are:
+
+-c [--cluster] <cluster_name>            Couchbase cluster name
+-h [--host] <host_name>                  Couchbase host [default: localhost]
+-p [--port] <port>                       Couchbase server port [default: 8091]
+-u [--user] <username>                   Couchbase db user name
+-w [--password] <password>               Couchbase db password
+-b [--bucket] <bucket_name>              Couchbase bucket to be queried
+-s [--scope] <scope_name>                Couchbase scope within a bucket to be queried [default: _default]
+-l [--collection] <collection_name>      Couchbase collection within a scope to be queried [default: _default]
+-d [--data-set] <dataset_name>           Comma separated datasets, or a filename with newline separated dataset
+-n [--index-column] <idx_column>         The secondary index column that differentiates the documents within a single bucket
+-o [--out-dir] <dir_name>                Directory name where the files will be dumped
+-v [--verbose] [Y | N]                   Whether verbose logging will be enabled [Defau;t: N]
+
+```
+
+Example 2:
+
+```sh
+cb-import help
+```
+
+```
+<cbs2sql> cb-import help
+
+Description                        : Export the documents of the remote couchbase db, as-is
+Usage                              : cb-import [OPTIONS] ...
+Example                            : cb-import -c cluster_1 -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource -s travel -l booking -i /tmp
+
+The options are:
+
+-c [--cluster] <cluster_name>            Couchbase cluster name
+-h [--host] <host_name>                  Couchbase host [default: localhost]
+-p [--port] <port>                       Couchbase server port [default: 8091]
+-u [--user] <username>                   Couchbase db user name
+-w [--password] <password>               Couchbase db password
+-b [--bucket] <bucket_name>              Couchbase bucket where the data to be inserted
+-s [--scope] <scope_name>                Couchbase scope within a bucket data to be inserted [default: _default]
+-l [--collection] <collection_name>      Couchbase collection within a scope data to be inserted [default: _default]
+-i [--in-dir] <dir_name>                 Directory name from where the document files will be read
+-f [--file-name] <file_name>             Specific json file to be imported. If this option is null, then all the files from the --in-dir will be imported
+-v [--verbose] [Y | N]                   Whether verbose logging will be enabled [Defau;t: N]
+
+```
+
+Example 2:
+
+```sh
+gen-schema help
+```
+
+```
+<cbs2sql> gen-schema help
+
+Description                        : Generate the sql schema from couchbase doc
+Usage                              : gen-schema [OPTIONS] ...
+Example                            : gen-schema -c <...> -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource
+
+The options are:
+
+-d [--data-set] <dataset_name>           Name of the data set. If not provided, it will be derived from filename
+-i [--in-dir] <directory_name>           Directory where the json file(s) are kept
+-f [--file-name] <filename>              Json filename. If directory name is not specified, this should be a fully qualified name. Otherwise, it can be a simple name or extension (*.json)
+-l [--flatten-child] [Y|N]               If Y, eligible nested child objects are flattened into the parent table
+-v [--verbose] [Y | N]                   Whether verbose logging will be enabled [Defau;t: N]
+
 ```
 
 ---
 
-# Export Documents
+## Export Documents
 
 Exports Couchbase documents **as-is** to the local filesystem.
 
-## Usage
+### Usage
 
 ```bash
 cb-export [OPTIONS]
 ```
 
-## Example
+### Example
 
 ```bash
 cb-export \
@@ -76,7 +167,7 @@ cb-export \
   -o /tmp/export
 ```
 
-## Options
+### Options
 
 | Option                 | Description                                               | Default     |
 | ---------------------- | --------------------------------------------------------- | ----------- |
@@ -95,17 +186,17 @@ cb-export \
 
 ---
 
-# Import Documents
+## Import Documents
 
 Imports previously exported JSON files into a Couchbase cluster.
 
-## Usage
+### Usage
 
 ```bash
 cb-import [OPTIONS]
 ```
 
-## Example
+### Example
 
 ```bash
 cb-import \
@@ -120,7 +211,7 @@ cb-import \
   -i /tmp/export
 ```
 
-## Options
+### Options
 
 | Option               | Description                                                                                  | Default     |
 | -------------------- | -------------------------------------------------------------------------------------------- | ----------- |
@@ -138,17 +229,17 @@ cb-import \
 
 ---
 
-# Generate SQL Schema
+## Generate SQL Schema
 
 Generates relational SQL table definitions from exported Couchbase JSON documents.
 
-## Usage
+### Usage
 
 ```bash
 gen-schema [OPTIONS]
 ```
 
-## Example
+### Example
 
 ```bash
 gen-schema \
@@ -156,7 +247,7 @@ gen-schema \
   -l Y
 ```
 
-## Options
+### Options
 
 | Option                  | Description                                                                                                                                       | Default |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
@@ -168,11 +259,11 @@ gen-schema \
 
 ---
 
-# Typical Workflow
+## Typical Workflow
 
 The following workflow is recommended when migrating Couchbase data.
 
-## Step 1 - Export Documents
+### Step 1 - Export Documents
 
 ```text
 Source Couchbase
@@ -184,7 +275,7 @@ Source Couchbase
    JSON Files
 ```
 
-## Step 2 - Generate SQL Schema
+### Step 2 - Generate SQL Schema
 
 ```text
 JSON Files
@@ -196,7 +287,7 @@ gen-schema
 CREATE TABLE statements
 ```
 
-## Step 3 - Import Documents (Optional)
+### Step 3 - Import Documents (Optional)
 
 ```text
 JSON Files
@@ -210,23 +301,23 @@ Destination Couchbase
 
 ---
 
-# Input and Output
+## Input and Output
 
-## Export
+### Export
 
 Produces one or more JSON files representing the exported Couchbase documents.
 
-## Schema Generation
+### Schema Generation
 
 Produces SQL `CREATE TABLE` definitions inferred from the JSON document structure.
 
-## Import
+### Import
 
 Reads exported JSON files and inserts them into the target Couchbase bucket, scope, and collection.
 
 ---
 
-# Dataset Support
+## Dataset Support
 
 The `--data-set` option accepts either:
 
@@ -248,7 +339,7 @@ invoice
 
 ---
 
-# Flattening Nested Objects
+## Flattening Nested Objects
 
 The `--flatten-child` option controls how nested JSON objects are represented.
 
@@ -258,7 +349,7 @@ When disabled (`N`), nested objects are represented as separate relational entit
 
 ---
 
-# Logging
+## Logging
 
 Verbose logging can be enabled for every command:
 
@@ -270,7 +361,7 @@ This is useful for debugging, troubleshooting, and monitoring long-running migra
 
 ---
 
-# Error Handling
+## Error Handling
 
 The tool reports meaningful errors for common failure scenarios including:
 
@@ -284,7 +375,7 @@ The tool reports meaningful errors for common failure scenarios including:
 
 ---
 
-# Best Practices
+## Best Practices
 
 * Export data before generating SQL schemas.
 * Review generated schemas before creating database tables.
@@ -294,7 +385,7 @@ The tool reports meaningful errors for common failure scenarios including:
 
 ---
 
-# Supported Use Cases
+## Supported Use Cases
 
 * Couchbase database migration
 * SQL schema discovery
@@ -305,7 +396,7 @@ The tool reports meaningful errors for common failure scenarios including:
 
 ---
 
-# License
+## License
 
 Specify the appropriate license for your project (MIT, Apache 2.0, GPL, etc.).
 
