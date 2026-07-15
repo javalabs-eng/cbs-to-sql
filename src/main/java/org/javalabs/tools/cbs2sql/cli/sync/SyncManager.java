@@ -19,6 +19,18 @@ import org.javalabs.tools.cbs2sql.cli.model.SyncOptions;
 import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 
 /**
+ * Singleton manager responsible for coordinating export and import operations
+ * between a Couchbase database and external data files.
+ *
+ * <p>
+ * The manager ensures that only one synchronization operation executes at a
+ * time. It provides methods for exporting Couchbase documents to files and
+ * importing documents from files into Couchbase. Long-running operations can
+ * be interrupted by requesting a stop.
+ *
+ * <p>
+ * The manager delegates the actual import and export logic to
+ * {@link CbExporter} and {@link CbImporter} respectively.
  *
  * @author schan280
  */
@@ -36,18 +48,57 @@ public class SyncManager {
     
     private SyncManager() {}
     
+    /**
+     * Returns the singleton instance of the synchronization manager.
+     *
+     * @return the shared {@code SyncManager} instance
+     */
     public static SyncManager getInstance() {
         return MANAGER;
     }
 
+    /**
+     * Indicates whether an import or export operation is currently in progress.
+     *
+     * @return {@code true} if a synchronization task is running;
+     *         otherwise {@code false}
+     */
     public Boolean isRunning() {
         return running;
     }
 
+    /**
+     * Requests the currently running synchronization operation to stop.
+     *
+     * <p>The request is cooperative. Import and export operations periodically
+     * check this flag and terminate gracefully when it has been set.
+     */
     public void stopRequested() {
         this.stopFlag = Boolean.TRUE;
     }
     
+    /**
+     * Exports documents from the configured Couchbase bucket, scope, and
+     * collection to external files.
+     *
+     * <p>
+     * The export may operate on:
+     * <ul>
+     *   <li>all documents in the configured collection,</li>
+     *   <li>a list of datasets supplied in the options, or</li>
+     *   <li>datasets read from a dataset file.</li>
+     * </ul>
+     *
+     * Prior to exporting each dataset, the total number of matching documents
+     * is determined. Empty datasets are skipped.
+     *
+     * <p>
+     * If another synchronization operation is already running, this method
+     * returns immediately.
+     *
+     * @param opts the synchronization options describing the source
+     *             Couchbase configuration and export parameters
+     */
     public void export(SyncOptions opts) {
         Storage source = null;
         
@@ -146,6 +197,22 @@ public class SyncManager {
         }
     }
     
+    /**
+     * Imports documents from one or more files into the configured Couchbase
+     * bucket, scope, and collection.
+     *
+     * <p>
+     * If no specific filename is supplied, all eligible files in the input
+     * directory are imported. Otherwise, only the specified file is processed.
+     * Any datasets listed in the exclusion list are skipped.
+     *
+     * <p>
+     * If another synchronization operation is already running, this method
+     * returns immediately.
+     *
+     * @param opts the synchronization options describing the destination
+     *             Couchbase configuration and import parameters
+     */
     public void imprt(SyncOptions opts) {
         Storage dest = null;
         BufferedReader br = null;

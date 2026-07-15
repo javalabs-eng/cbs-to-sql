@@ -9,6 +9,19 @@ import com.couchbase.client.java.manager.collection.ScopeSpec;
 import java.util.List;
 
 /**
+ * Defines the contract for generating and executing storage-specific query
+ * operations.
+ *
+ * <p>
+ * Implementations of this interface encapsulate the query construction
+ * logic required by a particular storage provider or operation, allowing the
+ * application to remain independent of the underlying query language or
+ * database implementation.
+ *
+ * <p>
+ * A {@code QueryStrategy} typically produces queries for CRUD operations
+ * using a supplied {@code QueryConfig} and is intended to be used by
+ * {@code Storage} implementations during request execution.
  *
  * @author schan280
  */

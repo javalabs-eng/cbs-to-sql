@@ -2,7 +2,6 @@ package org.javalabs.tools.cbs2sql.cli.rel;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import org.javalabs.tools.cbs2sql.cli.bo.ConverterBO;
 import org.javalabs.tools.cbs2sql.cli.model.Transform;
 import org.javalabs.tools.cbs2sql.cli.util.MapperUtil;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -74,7 +73,7 @@ public class IntrospectorTest {
             Transform payload = new Transform();
             payload.setFilename("/Users/schan280/Projects/cbs-to-sql/src/test/resources/person.json");
             
-            String sql = new ConverterBO().convertJsonToCsv(payload);
+            String sql = new Introspector().introspectAndGenerateScript(payload);
             
         }
         catch (Exception e) {
@@ -88,7 +87,7 @@ public class IntrospectorTest {
             Transform payload = new Transform();
             payload.setFilename("/Users/schan280/Projects/cbs-to-sql/src/test/resources/organization.json");
             
-            String sql = new ConverterBO().convertJsonToCsv(payload);
+            String sql = new Introspector().introspectAndGenerateScript(payload);
             System.out.println(sql);
         }
         catch (Exception e) {
@@ -105,7 +104,7 @@ public class IntrospectorTest {
         payload.setDataset(payload.getFilename().substring(0, payload.getFilename().indexOf(".")));
         
         try {
-            String sql = new ConverterBO().convertJsonToCsv(payload);
+            String sql = new Introspector().introspectAndGenerateScript(payload);
             System.out.println(sql);
         }
         catch (Exception e) {

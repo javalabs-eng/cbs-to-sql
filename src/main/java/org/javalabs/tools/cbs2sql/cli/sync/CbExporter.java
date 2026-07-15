@@ -16,6 +16,20 @@ import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 import org.javalabs.tools.cbs2sql.cli.util.StopWatch;
 
 /**
+ * Exports documents from a Couchbase collection to one or more output files.
+ *
+ * <p>The exporter retrieves documents from the configured Couchbase bucket,
+ * scope, and collection, optionally filtering by dataset, and writes them to
+ * the requested output format. Large result sets are processed in batches to
+ * minimize memory consumption and to support exporting collections containing
+ * millions of documents.</p>
+ *
+ * <p>The export process is coordinated by {@link SyncManager}, while this class
+ * is responsible for querying Couchbase, streaming the results, and delegating
+ * record serialization to the appropriate output writer.</p>
+ *
+ * <p>This class is intended for internal use by the synchronization framework
+ * and is not designed to be used directly by client code.</p>
  *
  * @author schan280
  */

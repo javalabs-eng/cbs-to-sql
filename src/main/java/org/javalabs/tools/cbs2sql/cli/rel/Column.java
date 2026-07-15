@@ -3,6 +3,12 @@ package org.javalabs.tools.cbs2sql.cli.rel;
 import java.util.Objects;
 
 /**
+ * Represents a column in an inferred relational table.
+ *
+ * <p>A {@code Column} encapsulates the metadata required to generate a SQL
+ * column definition, including its name, SQL and Java data types, size,
+ * ordering, nullability, key constraints, and optional foreign-key
+ * relationship information.</p>
  *
  * @author schan280
  */

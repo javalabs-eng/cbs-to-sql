@@ -9,30 +9,58 @@ import java.util.Map;
 import org.javalabs.tools.cbs2sql.cli.exec.SchemaExecutor;
 
 /**
+ * Provides command discovery and help information for the interactive Couchbase-to-SQL command-line interface.
+ *
+ * <p>
+ * This class maintains the registry of supported CLI commands and their corresponding executors. It also generates the
+ * welcome banner and command-specific usage information displayed to users during interactive sessions.</p>
  *
  * @author Sudiptasish Chanda
  */
 public class Helper {
-    
+
     private final Map<String, ExecutorBase> commands = new HashMap<>();
-    
+
+    /**
+     * Public constructor.
+     */
     public Helper() {
         commands.put("gen-schema", new SchemaExecutor());
         commands.put("cb-export", new ExportExecutor());
         commands.put("cb-import", new ImportExecutor());
     }
-    
+
+    /**
+     * Returns the names of all supported CLI commands.
+     *
+     * @return a list containing the registered command names
+     */
     public List<String> commands() {
         return new ArrayList<>(commands.keySet());
     }
-    
+
+    /**
+     * Returns the executor associated with the specified command.
+     *
+     * @param name the command name
+     * @return the corresponding command executor, or {@code null} if the command is not registered
+     */
     public ExecutorBase command(String name) {
         return commands.get(name);
     }
-    
+
+    /**
+     * Generates the CLI welcome banner.
+     *
+     * <p>
+     * The banner includes a brief description of the application, the list of supported commands, and instructions for
+     * obtaining command-specific help.</p>
+     *
+     * @return the formatted welcome message
+     */
     public String welcome() {
         StringBuilder buff = new StringBuilder(128);
-        
+
         buff.append("\n").append("###################################################################################");
         buff.append("\n").append("#                                                                                 #");
         buff.append("\n").append("#                         Couchbase To SQL Migration                              #");
@@ -46,17 +74,27 @@ public class Helper {
         buff.append("\n").append("###################################################################################");
         buff.append("\n").append("\n").append("Type \"help\" to see the available commands");
         buff.append("\n").append("Use \"command help\" for usage of \"command\". [Example: schema help]").append("\n");
-        
+
         //else {
         //    buff.append("Invalid command").append("\n");
         //    buff.append("If you are unsure of the command, type <command> help to see the list of options").append("\n");
         //}
         return buff.toString();
     }
-    
+
+    /**
+     * Generates the usage information for the specified command.
+     *
+     * <p>
+     * The returned text includes the command description, syntax, example invocation, and the supported command-line
+     * options. If the command is not recognized, an appropriate error message is returned.</p>
+     *
+     * @param command the command for which usage information is requested
+     * @return the formatted usage information for the command, or an error message if the command is not supported
+     */
     public String options(String command) {
         StringBuilder buff = new StringBuilder(512);
-        
+
         if (command.equals("gen-schema")) {
             buff.append("\n").append(String.format("%-35s: %s", "Description", "Generate the sql schema from couchbase doc"));
             buff.append("\n").append(String.format("%-35s: %s", "Usage", "gen-schema [OPTIONS] ..."));
@@ -68,8 +106,7 @@ public class Helper {
             buff.append(String.format("%-40s %s\n", "-f [--file-name] <filename>", "Json filename. If directory name is not specified, this should be a fully qualified name. Otherwise, it can be a simple name or extension (*.json)"));
             buff.append(String.format("%-40s %s\n", "-l [--flatten-child] [Y|N]", "If Y, eligible nested child objects are flattened into the parent table"));
             buff.append(String.format("%-40s %s\n", "-v [--verbose] [Y | N]", "Whether verbose logging will be enabled [Defau;t: N]"));
-        }
-        else if (command.equals("cb-export")) {
+        } else if (command.equals("cb-export")) {
             buff.append("\n").append(String.format("%-35s: %s", "Description", "Export the documents of the remote couchbase db, as-is"));
             buff.append("\n").append(String.format("%-35s: %s", "Usage", "cb-export [OPTIONS] ..."));
             buff.append("\n").append(String.format("%-35s: %s", "Example", "cb-export -c cluster_1 -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource -s travel -l booking -d dataset_1,dataset_2 -n type -o /tmp"));
@@ -87,8 +124,7 @@ public class Helper {
             buff.append(String.format("%-40s %s\n", "-n [--index-column] <idx_column>", "The secondary index column that differentiates the documents within a single bucket"));
             buff.append(String.format("%-40s %s\n", "-o [--out-dir] <dir_name>", "Directory name where the files will be dumped"));
             buff.append(String.format("%-40s %s\n", "-v [--verbose] [Y | N]", "Whether verbose logging will be enabled [Defau;t: N]"));
-        }
-        else if (command.equals("cb-import")) {
+        } else if (command.equals("cb-import")) {
             buff.append("\n").append(String.format("%-35s: %s", "Description", "Export the documents of the remote couchbase db, as-is"));
             buff.append("\n").append(String.format("%-35s: %s", "Usage", "cb-import [OPTIONS] ..."));
             buff.append("\n").append(String.format("%-35s: %s", "Example", "cb-import -c cluster_1 -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource -s travel -l booking -i /tmp"));
@@ -105,8 +141,7 @@ public class Helper {
             buff.append(String.format("%-40s %s\n", "-i [--in-dir] <dir_name>", "Directory name from where the document files will be read"));
             buff.append(String.format("%-40s %s\n", "-f [--file-name] <file_name>", "Specific json file to be imported. If this option is null, then all the files from the --in-dir will be imported"));
             buff.append(String.format("%-40s %s\n", "-v [--verbose] [Y | N]", "Whether verbose logging will be enabled [Defau;t: N]"));
-        }
-        else {
+        } else {
             buff.append("Invalid command ").append(command).append("\n");
             buff.append("If you are unsure about the command, type help to see the list of commands").append("\n");
         }

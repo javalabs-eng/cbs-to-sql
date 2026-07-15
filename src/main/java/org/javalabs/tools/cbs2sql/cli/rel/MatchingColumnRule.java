@@ -6,11 +6,42 @@ import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 import org.javalabs.tools.cbs2sql.cli.util.GeneralUtility;
 
 /**
+ * Resolves differences between matching columns discovered while analyzing multiple JSON documents.
+ *
+ * <p>
+ * This class reconciles changes in data type, length, nullability, and other column characteristics to produce a schema
+ * that accommodates all observed document variations. Where possible, values are converted to the existing column type
+ * to preserve schema consistency.</p>
  *
  * @author schan280
  */
 public class MatchingColumnRule {
 
+    /**
+     * Reconciles a column from a newly analyzed table with the corresponding column in an existing table definition.
+     *
+     * <p>
+     * This method applies schema reconciliation rules when the same column is encountered across multiple JSON
+     * documents. Depending on the detected differences, it may:</p>
+     * <ul>
+     * <li>increase the column length for string values,</li>
+     * <li>update the column nullability,</li>
+     * <li>promote numeric data types to a wider type when required,</li>
+     * <li>convert incoming values to the existing column type where possible, or</li>
+     * <li>update array column definitions to reflect newly discovered element types.</li>
+     * </ul>
+     *
+     * <p>
+     * The supplied {@code table} may be modified to normalize the row data so that it remains consistent with the
+     * reconciled schema.</p>
+     *
+     * @param table the table containing the row currently being analyzed
+     * @param another the column definition inferred from the current JSON document
+     * @param current the existing column definition maintained in the consolidated schema
+     * @throws ReflectiveOperationException if a reflective type conversion cannot be performed while normalizing column
+     * values
+     * @throws RuntimeException if schema reconciliation cannot be completed due to an unrecoverable error
+     */
     public void apply(Table table, Column another, Column current) throws RuntimeException, ReflectiveOperationException {
         if (another.getType().equals(current.getType())) {
             // SQL data type matches.
@@ -25,24 +56,21 @@ public class MatchingColumnRule {
             // Check 2: The previous value for column is null, but the new value non-null, or vice-versa
             //          In which case toggle the nullable attribute.
             Object newVal = table.getData().get(another.getOrder());
-            if ((newVal != null && current.getNullable()) || (newVal == null && ! current.getNullable())) {
+            if ((newVal != null && current.getNullable()) || (newVal == null && !current.getNullable())) {
                 current.setNullable(Boolean.TRUE);
             }
-        }
-        else {
+        } else {
             // For the same column name, we now got a different data type.
             if (current.getJavaType() != Array.class) {
                 Object newVal = table.getData().get(another.getOrder());
-                
+
                 // Case 1:
                 // Old json snippet: { "rate": 4.25 }   -> data type was Float/Double    (NUMBER(10,2))
                 // New json snippet: { "rate": "" }     -> data type is String           (VARCHAR)
                 // If new value is null or empty, retain the existing sql data type.
                 if (newVal == null) {
                     // Do not make any change. newVal is anyway null.
-                }
-                
-                // Case 2: It is possible due to erroneous data present in json that one decimal field was represented 
+                } // Case 2: It is possible due to erroneous data present in json that one decimal field was represented 
                 // as empty string (""), however, in subsequent document, the field is turned out to be decimal with value
                 // such as 5.71, etc.
                 // In this case, we have to change the column data type.
@@ -55,8 +83,7 @@ public class MatchingColumnRule {
                         // Does not matter whether there was an empty or null value, change the data type
                         current.setType(another.getType());
                         current.setJavaType(another.getJavaType());
-                    }
-                    else {
+                    } else {
                         // Case 2b:
                         // Old json snippet: { "rate": 8.9 }     -> data type was String        (NUMBER(10,2))
                         // New json snippet: { "rate": "4.25" }  -> data type is Float/Double   (VARCHAR)
@@ -66,17 +93,15 @@ public class MatchingColumnRule {
                         if (another.getJavaType() == String.class) {
                             if (GeneralUtility.isPrimitiveNumeric(current.getJavaType())) {
                                 Method method = current.getJavaType().getMethod("valueOf", String.class);
-                                newVal = method.invoke(null, (String)newVal);
+                                newVal = method.invoke(null, (String) newVal);
 
                                 table.getData().set(another.getOrder(), newVal);
-                            }
-                            else {
+                            } else {
                                 ConsoleWriter.println(String.format(
-                                        "Previous data type for %s was %s. Expecting numeric type"
-                                        , another.getName(), another.getJavaType()));
+                                        "Previous data type for %s was %s. Expecting numeric type",
+                                         another.getName(), another.getJavaType()));
                             }
-                        }
-                        // Case 2c:
+                        } // Case 2c:
                         // Old json snippet: { "rate": "8.9" } -> data type was String        (VARCHAR)
                         // New json snippet: { "rate": 4.25 }  -> data type is Float/Double   (NUMBER(10,2))
                         //
@@ -85,14 +110,13 @@ public class MatchingColumnRule {
                         else if (current.getJavaType() == String.class) {
                             newVal = String.valueOf(newVal);
                             table.getData().set(another.getOrder(), newVal);
-                        }
-                        else {
+                        } else {
                             // Case 2d:
                             // Old json snippet: { "rate": 6 }    -> data type was Integer/Long    (NUMBER/INT)
                             // New json snippet: { "rate": 7.35 } -> data type is Float/Double     (NUMBER(10,2))
                             // We will upgrade, and not downgrade.
                             // If already upgraded, will skip ...
-                            
+
                             if (GeneralUtility.rankOf(another.getJavaType()) > GeneralUtility.rankOf(current.getJavaType())) {
                                 current.setJavaType(another.getJavaType());
                                 current.setType(another.getType());
@@ -100,19 +124,17 @@ public class MatchingColumnRule {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 // For non-Array data type.
                 Object newVal = table.getData().get(another.getOrder());
-                
+
                 // Case 1:
                 // Old json snippet: { "bin": [345, 33] }   -> data type was INT[]
                 // New json snippet: { "bin": [] }          -> data type is TEXT[]
                 // If new value is null or empty, retain the existing sql data type.
                 if (newVal == null) {
                     // Do Nothing.
-                }
-                else {
+                } else {
                     // Case 1b:
                     // Old json snippet: { "bin": [] }        -> data type was TEXT[]
                     // New json snippet: { "bin": [345, 33] } -> data type is INT[]

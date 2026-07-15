@@ -29,6 +29,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 /**
+ * Abstract Internal couchbase storage.
  *
  * @author schan280
  */

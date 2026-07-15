@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Represents the relational analysis result for a single table.
+ *
+ * <p>A {@code Result} combines the inferred table definition with the data
+ * rows extracted from one or more JSON documents. It serves as the
+ * intermediate representation between schema analysis and SQL script
+ * generation.</p>
  *
  * @author schan280
  */

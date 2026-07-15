@@ -11,6 +11,7 @@ import java.util.Map;
 import reactor.core.publisher.Flux;
 
 /**
+ * A query strategy for batch manipulation.
  *
  * @author schan280
  */

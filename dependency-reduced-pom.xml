@@ -4,7 +4,7 @@
   <groupId>org.javalabs.tools</groupId>
   <artifactId>cbs-to-sql</artifactId>
   <name>cbs-to-sql</name>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <description>Tool to convert couchbase doc to postgres sql schema</description>
   <url>https://github.com/javalabs-eng/cbs-to-sql</url>
   <developers>
@@ -75,6 +75,18 @@
         <executions>
           <execution>
             <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
             <goals>
               <goal>jar</goal>
             </goals>

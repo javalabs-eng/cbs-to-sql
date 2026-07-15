@@ -18,7 +18,7 @@ import org.javalabs.tools.cbs2sql.cli.sync.SyncManager;
 /**
  * Schema generator.
  * 
- * This executor will connect to remote couchbase db and bucket and generate the sql schemas for all collection.
+ * This executor will connect to remote couchbase db and bucket and import the data to specific bucket/scope and collection..
  * 
  * <p>
  * However, if you have one bucket, and the documents within that bucket are distinguished based on certain attribute(s)

@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Represents an inferred relational database table.
+ *
+ * <p>A {@code Table} contains the column definitions, detected relationships
+ * to other tables, and the row data extracted from JSON documents. It forms
+ * the core data structure used throughout schema analysis and SQL script
+ * generation.</p>
  *
  * @author schan280
  */

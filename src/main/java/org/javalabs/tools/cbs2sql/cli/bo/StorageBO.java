@@ -12,6 +12,7 @@ import java.util.Map;
 import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 
 /**
+ * Business object for storage data manipulation.
  *
  * @author schan280
  */

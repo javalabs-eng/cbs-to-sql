@@ -11,6 +11,7 @@ import java.util.Map;
 import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 
 /**
+ * A concrete implementation of couchbase storage.
  *
  * @author schan280
  */

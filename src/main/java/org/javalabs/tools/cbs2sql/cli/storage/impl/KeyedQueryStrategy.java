@@ -7,6 +7,7 @@ import com.couchbase.client.java.kv.GetResult;
 import com.couchbase.client.java.kv.MutationResult;
 
 /**
+ * A query strategy around document key.
  *
  * @author schan280
  */

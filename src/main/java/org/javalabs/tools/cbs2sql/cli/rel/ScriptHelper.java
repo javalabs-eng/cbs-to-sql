@@ -16,12 +16,41 @@ import org.javalabs.tools.cbs2sql.cli.model.Transform;
 import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 
 /**
- * Helper class to generate and dump script.
+ * Generates SQL DDL and DML scripts from relational schema analysis results.
+ *
+ * <p>This class converts the relational model produced by the
+ * {@link Introspector} into executable SQL scripts. Depending on the
+ * configured transformation options, the generated scripts may be returned to
+ * the caller or written to individual files on disk.</p>
+ *
+ * <p>The helper delegates SQL generation to {@link SchemaGen} and manages the
+ * organization and persistence of the generated script files.</p>
  *
  * @author schan280
  */
 public class ScriptHelper {
 
+    /**
+     * Generates SQL scripts from the supplied relational analysis results.
+     *
+     * <p>
+     * For each analyzed table, this method generates the corresponding {@code CREATE TABLE} (DDL) and
+     * {@code INSERT INTO} (DML) statements. The generated scripts are either returned as a string or written to
+     * individual SQL files, depending on the transformation options.</p>
+     *
+     * <p>
+     * When script dumping is enabled ({@code dump = "Y"}), separate {@code <table_name>_ddl.sql} and
+     * {@code <table_name>_dml.sql} files are created under the configured output directory, and a summary message is
+     * returned. Otherwise, the generated DDL script is returned directly.</p>
+     *
+     * @param payload the transformation options that control script generation, including the output directory and
+     * whether scripts should be written to disk
+     * @param results the relational analysis results containing the inferred table definitions and corresponding row
+     * data
+     * @return the generated DDL script when script dumping is disabled; otherwise, a summary describing the generated
+     * SQL files
+     * @throws RuntimeException if an error occurs while writing the generated scripts to disk
+     */
     public String generateScript(Transform payload, Collection<Result> results) {
         StringBuilder ddlScript = new StringBuilder(81920);
         StringBuilder dmlScript = new StringBuilder(81920000);

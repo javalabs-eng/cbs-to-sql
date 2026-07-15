@@ -9,15 +9,25 @@ import org.javalabs.tools.cbs2sql.cli.rel.Introspector;
 import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 
 /**
- * Schema generator.
- * 
- * This executor will connect to remote couchbase db and bucket and generate the sql schemas for all collection.
- * 
- * <p>
- * However, if you have one bucket, and the documents within that bucket are distinguished based on certain attribute(s)
- * for each such document type it will generate the associated sql schema.
+ * Executes database schema definition scripts against the configured target
+ * database.
  *
- * @author Sudiptasish Chanda
+ * <p>{@code SchemaExecutor} is responsible for reading schema definition
+ * statements (DDL), executing them in the appropriate order, and ensuring
+ * that the target database structure is prepared before data import or
+ * synchronization operations begin. Typical operations include creating
+ * schemas, tables, indexes, constraints, and other database objects.</p>
+ *
+ * <p>The executor delegates statement execution to the configured
+ * {@code Storage} implementation, allowing the same workflow to support
+ * different database providers while remaining independent of the underlying
+ * SQL dialect.</p>
+ *
+ * <p>This class is intended for internal use by the schema migration and
+ * synchronization framework and is not designed to be used directly by
+ * client applications.</p>
+ *
+ * @author schan280
  */
 public class SchemaExecutor implements ExecutorBase {
     

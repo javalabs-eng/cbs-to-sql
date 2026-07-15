@@ -12,7 +12,13 @@ import java.util.Map;
 import org.javalabs.tools.cbs2sql.cli.model.Transform;
 
 /**
- * Json document analyzer.
+ * Analyzes JSON documents and derives an equivalent relational schema.
+ *
+ * <p>The analyzer recursively traverses JSON objects and arrays, inferring
+ * relational tables, columns, data types, primary keys, and relationships.
+ * Nested objects may be flattened into their parent table or represented as
+ * separate child tables depending on the configured transformation
+ * options.</p>
  *
  * @author schan280
  */

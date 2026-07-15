@@ -18,6 +18,20 @@ import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 import org.javalabs.tools.cbs2sql.cli.util.StopWatch;
 
 /**
+ * Imports documents from external data files into a Couchbase collection.
+ *
+ * <p>The importer reads records from the configured input file, transforms
+ * them into Couchbase documents as required, and performs batch insert or
+ * upsert operations against the target bucket, scope, and collection. Batch
+ * processing is used to improve throughput while efficiently handling large
+ * datasets.</p>
+ *
+ * <p>The import process is coordinated by {@link SyncManager}, while this
+ * class is responsible for reading the input, preparing Couchbase write
+ * operations, and persisting documents to the target collection.</p>
+ *
+ * <p>This class is intended for internal use by the synchronization framework
+ * and is not designed to be used directly by client code.</p>
  *
  * @author schan280
  */
