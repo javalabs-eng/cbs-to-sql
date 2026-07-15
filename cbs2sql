@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export DEBUG_OPTS="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=9791,server=y,suspend=n"
+export JAVA_OPTS="-Dlog4j2.configurationFile=log4j2-cb.xml"
+
+java $DEBUG_OPTS $JAVA_OPTS -Dorg.slf4j.simpleLogger.defaultLogLevel=off -jar target/cbs-to-sql-0.0.1-SNAPSHOT-exec.jar

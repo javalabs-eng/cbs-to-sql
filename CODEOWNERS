@@ -1,0 +1,35 @@
+# CODEOWNERS
+#
+# This file defines the individuals or teams responsible for code in this repository.
+# Code owners are automatically requested for review when someone opens a pull request
+# that modifies the code they own.
+#
+# For syntax reference, see:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for all files in the repository
+*   sudiptasish chanda
+
+# Source code ownership
+src/                        sudiptasish
+
+# Test ownership
+src/test/                   sudiptasish
+
+# CI/CD workflows
+.github/                    sudiptasish
+
+# Documentation
+README.md                   sudiptasish
+CONTRIBUTING.md             sudiptasish
+CODEOWNERS                  sudiptasish
+
+# Build & packaging configuration
+pom.xml                     sudiptasish
+
+# Schema generation tool
+schema-gen                  sudiptasish
+
+# Libraries
+lib/                        sudiptasish
+

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/Users/schan280/NetBeansProjects/csu-app/src/main/resources/orm.xsd" uri="src/main/resources/jaxb/orm/orm.xsd"/>
+</catalog>
