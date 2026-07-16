@@ -67,7 +67,7 @@ cb-export help
 
 Description                        : Export the documents of the remote couchbase db, as-is
 Usage                              : cb-export [OPTIONS] ...
-Example                            : cb-export -c cluster_1 -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource -s travel -l booking -d dataset_1,dataset_2 -n type -o /tmp
+Example                            : cb-export -c cluster_1 -h slc05mkt.org.com -p 8091 -u Zulu -w s83@! -b resource -s travel -l booking -d dataset_1,dataset_2 -n type -o /tmp
 
 The options are:
 
@@ -97,7 +97,7 @@ cb-import help
 
 Description                        : Export the documents of the remote couchbase db, as-is
 Usage                              : cb-import [OPTIONS] ...
-Example                            : cb-import -c cluster_1 -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource -s travel -l booking -i /tmp
+Example                            : cb-import -c cluster_1 -h slc05mkt.org.com -p 8091 -u Zulu -w s83@! -b resource -s travel -l booking -i /tmp
 
 The options are:
 
@@ -126,7 +126,7 @@ gen-schema help
 
 Description                        : Generate the sql schema from couchbase doc
 Usage                              : gen-schema [OPTIONS] ...
-Example                            : gen-schema -c <...> -h slc05mkt.org.com -p 8091 -u sudip -w s83@! -b resource
+Example                            : gen-schema -c <...> -h slc05mkt.org.com -p 8091 -u Zulu -w s83@! -b resource
 
 The options are:
 
