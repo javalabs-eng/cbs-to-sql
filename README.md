@@ -152,37 +152,19 @@ cb-export [OPTIONS]
 
 ### Example
 
+The below command will export all the economy type booking data from the remote couchbase server.
+
 ```bash
 cb-export \
   -c cluster_1 \
-  -h slc05mkt.org.com \
-  -p 8091 \
-  -u sudip \
+  -h slc05mkt.javalabs.org \
+  -u test \
   -w ******** \
-  -b resource \
-  -s travel \
-  -l booking \
-  -d dataset_1,dataset_2 \
+  -b booking \
   -n type \
+  -d economy
   -o /tmp/export
 ```
-
-### Options
-
-| Option                 | Description                                               | Default     |
-| ---------------------- | --------------------------------------------------------- | ----------- |
-| `-c`, `--cluster`      | Couchbase cluster name                                    |             |
-| `-h`, `--host`         | Couchbase host                                            | `localhost` |
-| `-p`, `--port`         | Couchbase server port                                     | `8091`      |
-| `-u`, `--user`         | Couchbase username                                        |             |
-| `-w`, `--password`     | Couchbase password                                        |             |
-| `-b`, `--bucket`       | Bucket to export                                          |             |
-| `-s`, `--scope`        | Scope name                                                | `_default`  |
-| `-l`, `--collection`   | Collection name                                           | `_default`  |
-| `-d`, `--data-set`     | Comma-separated datasets or a file containing datasets    |             |
-| `-n`, `--index-column` | Secondary index column used to distinguish document types |             |
-| `-o`, `--out-dir`      | Output directory for exported JSON files                  |             |
-| `-v`, `--verbose`      | Enable verbose logging (`Y`/`N`)                          | `N`         |
 
 ---
 
@@ -200,32 +182,14 @@ cb-import [OPTIONS]
 
 ```bash
 cb-import \
-  -c cluster_2 \
-  -h slc05mkt.org.com \
-  -p 8091 \
-  -u sudip \
+  -c cluster_local \
+  -h 127.0.0.1 \
+  -u couchbase \
   -w ******** \
-  -b resource \
-  -s travel \
-  -l booking \
-  -i /tmp/export
+  -b booking \
+  -s economy \
+  -f /tmp/export/booking.json
 ```
-
-### Options
-
-| Option               | Description                                                                                  | Default     |
-| -------------------- | -------------------------------------------------------------------------------------------- | ----------- |
-| `-c`, `--cluster`    | Couchbase cluster name                                                                       |             |
-| `-h`, `--host`       | Couchbase host                                                                               | `localhost` |
-| `-p`, `--port`       | Couchbase server port                                                                        | `8091`      |
-| `-u`, `--user`       | Couchbase username                                                                           |             |
-| `-w`, `--password`   | Couchbase password                                                                           |             |
-| `-b`, `--bucket`     | Destination bucket                                                                           |             |
-| `-s`, `--scope`      | Destination scope                                                                            | `_default`  |
-| `-l`, `--collection` | Destination collection                                                                       | `_default`  |
-| `-i`, `--in-dir`     | Directory containing exported JSON files                                                     |             |
-| `-f`, `--file-name`  | Import a specific JSON file. If omitted, all JSON files in the input directory are imported. |             |
-| `-v`, `--verbose`    | Enable verbose logging (`Y`/`N`)                                                             | `N`         |
 
 ---
 
@@ -243,77 +207,9 @@ gen-schema [OPTIONS]
 
 ```bash
 gen-schema \
-  -i /tmp/export \
-  -l Y
+  --file-name /Users/schan280/Projects/cbs-to-sql/data/client_institution.json
+  --verbose Y
 ```
-
-### Options
-
-| Option                  | Description                                                                                                                                       | Default |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `-d`, `--data-set`      | Dataset name. If omitted, the dataset is derived from the filename.                                                                               |         |
-| `-i`, `--in-dir`        | Directory containing exported JSON files                                                                                                          |         |
-| `-f`, `--file-name`     | JSON filename. If `--in-dir` is omitted, this must be a fully qualified path. Wildcards such as `*.json` are supported when used with `--in-dir`. |         |
-| `-l`, `--flatten-child` | Flatten eligible nested child objects into the parent table (`Y`/`N`)                                                                             | `N`     |
-| `-v`, `--verbose`       | Enable verbose logging (`Y`/`N`)                                                                                                                  | `N`     |
-
----
-
-## Typical Workflow
-
-The following workflow is recommended when migrating Couchbase data.
-
-### Step 1 - Export Documents
-
-```text
-Source Couchbase
-        │
-        ▼
- cb-export
-        │
-        ▼
-   JSON Files
-```
-
-### Step 2 - Generate SQL Schema
-
-```text
-JSON Files
-     │
-     ▼
-gen-schema
-     │
-     ▼
-CREATE TABLE statements
-```
-
-### Step 3 - Import Documents (Optional)
-
-```text
-JSON Files
-     │
-     ▼
-cb-import
-     │
-     ▼
-Destination Couchbase
-```
-
----
-
-## Input and Output
-
-### Export
-
-Produces one or more JSON files representing the exported Couchbase documents.
-
-### Schema Generation
-
-Produces SQL `CREATE TABLE` definitions inferred from the JSON document structure.
-
-### Import
-
-Reads exported JSON files and inserts them into the target Couchbase bucket, scope, and collection.
 
 ---
 
@@ -354,7 +250,7 @@ When disabled (`N`), nested objects are represented as separate relational entit
 Verbose logging can be enabled for every command:
 
 ```bash
--v Y
+--verbose Y
 ```
 
 This is useful for debugging, troubleshooting, and monitoring long-running migrations.
