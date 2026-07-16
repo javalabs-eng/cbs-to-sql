@@ -207,7 +207,7 @@ gen-schema [OPTIONS]
 
 ```bash
 gen-schema \
-  --file-name /Users/schan280/Projects/cbs-to-sql/data/client_institution.json
+  --file-name /tmp/export/booking.json
   --verbose Y
 ```
 
