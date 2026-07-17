@@ -205,10 +205,96 @@ gen-schema [OPTIONS]
 
 ### Example
 
+1. Let's say the file `/tmp/person.json` has the following 3 json documents.
+
+```
+{"name": "Socretes", "id": "A-001", "age": 61, "salary": 10045.50, "created_time": "1633-07-10 13:44:32", "address": {"house": "A/363/VI", "street": "Elgin Road", "city": "Athens", "pin": 62001}, "principles": [{"title": "Know Thyself", "topic": "Wisdom"}, {"title": "Socratic Method", "step": "Challenge assumptions", "method": "Seek contradictions"}], "active": false}
+{"name": "BC Roy", "id": "A-014", "age": 45, "salary": 9821.50, "created_time": "1872-09-22 18:00:30", "address": {"house": "34/A/9", "street": "Madison Road", "city": "Saltlake", "pin": 700032}, "principles": [{"title": "Wisdom", "topic": "Reach deeper understanding"}], "active": true, "themes": ["Humility", "Knowledge"]}
+{"name": "John D'Souza", "id": "A291", "age": "34", "created_time": "2019-12-04 09:05:45"}
+```
+
+**Note**: The file as a whole is not a json. However, every line of this file is a valid json document.
+
+2. Run the command:
+
 ```bash
-gen-schema \
-  --file-name /tmp/export/booking.json
-  --verbose Y
+<cbs2sql> gen-schema -f /tmp/person.json --verbose Y
+```
+
+3. Output:
+
+```
+<cbs2sql> gen-schema -f /tmp/person.json
+Analyzed dataset person and file /tmp/person.json. Generated 3 table(s). Elapsed time(ms): 6
+
+Generated 3 <table_name>_ddl.sql and <table_name>_dml.sql file(s) under /tmp/script
+```
+
+4. Let's verify the content of the file:
+
+(a1) `/tmp/script/person_ddl.sql`
+
+```
+CREATE TABLE person (
+    id            VARCHAR(10)    NOT NULL PRIMARY KEY,
+    name          VARCHAR(24)    NOT NULL,
+    age           INT            NOT NULL,
+    salary        NUMERIC(10,2)  ,
+    active        SMALLINT       ,
+    themes        VARCHAR[]      ,
+    created_time  TIMESTAMP      NOT NULL
+);
+
+```
+
+(a2) `/tmp/script/person_dml.sql`
+
+```
+INSERT INTO person(id, name, age, salary, active, themes, created_time) VALUES
+('A-001', 'Socretes', 61, 10045.5, 0, null, '1633-07-10 13:44:32'),
+('A-014', 'BC Roy', 45, 9821.5, 1, ARRAY['Humility', 'Knowledge'], '1872-09-22 18:00:30'),
+('A291', 'John D''Souza', 34, null, null, null, '2019-12-04 09:05:45');
+
+```
+
+(b1) `/tmp/script/principles_ddl.sql`
+
+```
+CREATE TABLE principles (
+    title  VARCHAR(24)  NOT NULL,
+    topic  VARCHAR(52)  NOT NULL
+);
+
+```
+
+(b2) `/tmp/script/principles_dml.sql`
+
+```
+INSERT INTO principles(title, topic) VALUES
+('Know Thyself', 'Wisdom'),
+('Wisdom', 'Reach deeper understanding');
+
+```
+
+(c1) `/tmp/script/address_ddl.sql`
+
+```
+CREATE TABLE address (
+    house   VARCHAR(16)  NOT NULL,
+    street  VARCHAR(24)  NOT NULL,
+    city    VARCHAR(16)  NOT NULL,
+    pin     INT          NOT NULL
+);
+
+```
+
+(c2) `/tmp/script/address_dml.sql`
+
+```
+INSERT INTO address(house, street, city, pin) VALUES
+('A/363/VI', 'Elgin Road', 'Athens', 62001),
+('34/A/9', 'Madison Road', 'Saltlake', 700032);
+
 ```
 
 ---
