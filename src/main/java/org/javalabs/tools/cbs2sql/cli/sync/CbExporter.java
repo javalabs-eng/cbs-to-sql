@@ -102,6 +102,7 @@ public class CbExporter {
         CBQueryConfig fQuery = new CBQueryConfig();
         fQuery.setBatch(Boolean.TRUE);
         fQuery.setRaw(Boolean.TRUE);
+        fQuery.setVerbose(opts.getVerbose());
 
         try {
             String query = MessageFormat.format(SELECT_QUERY, tmp[2], table);

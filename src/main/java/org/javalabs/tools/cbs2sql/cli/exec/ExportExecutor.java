@@ -30,8 +30,8 @@ public class ExportExecutor implements ExecutorBase {
     
     private final String name = "cb-export";
     private final String description = "Export the document and dump it to a local file";
-    private final List<String> longOptions = Arrays.asList("--cluster", "--host", "--port", "--user", "--password", "--bucket", "--json", "--verbose", "--out-dir", "--in-dir", "-extn", "--file-name", "--scope", "--collection", "--data-set", "--data-set-file", "--index-column", "--exclude");
-    private final List<String> shortOptions = Arrays.asList("-c", "-h", "-p", "-u", "-w", "-b", "-j", "-v", "-o", "-i", "-e", "-f", "-s", "-l", "-d", "-t", "-n", "-x");
+    private final List<String> longOptions = Arrays.asList("--cluster", "--host", "--port", "--user", "--password", "--bucket", "--json", "--verbose", "--out-dir", "--in-dir", "-extn", "--file-name", "--scope", "--collection", "--data-set", "--data-set-file", "--index-column", "--exclude", "--batch-size");
+    private final List<String> shortOptions = Arrays.asList("-c", "-h", "-p", "-u", "-w", "-b", "-j", "-v", "-o", "-i", "-e", "-f", "-s", "-l", "-d", "-t", "-n", "-x", "-z");
     
     public ExportExecutor() {}
 
@@ -149,6 +149,14 @@ public class ExportExecutor implements ExecutorBase {
                     excludes.add(ex.trim());
                 }
                 opts.setExcludes(excludes);
+            }
+            else if (options[i].equals("-z") || options[i].equals("--batch-size")) {
+                verifyArg(options[i], options[i + 1]);
+                int batchSize = Integer.parseInt(options[i + 1]);
+                if (batchSize > 2000) {
+                    batchSize = 2000;
+                }
+                opts.setBatchSize(batchSize);
             }
             else if (options[i].equals("-v") || options[i].equals("--verbose")) {
                 verifyArg(options[i], options[i + 1]);

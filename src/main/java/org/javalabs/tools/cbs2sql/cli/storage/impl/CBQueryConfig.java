@@ -22,10 +22,10 @@ public class CBQueryConfig implements QueryConfig {
     private Boolean raw = Boolean.FALSE;
     
     private Map<String, Object> params = new HashMap<>();
-    
     private List<JsonObject> records = new ArrayList<>();
 
     private String key;
+    private String verbose = "N";
     
     private Boolean ddlCreate;
     
@@ -125,8 +125,12 @@ public class CBQueryConfig implements QueryConfig {
         this.ddlCreate = ddlCreate;
     }
 
+    public void setVerbose(String verbose) {
+        this.verbose = verbose;
+    }
+
     @Override
     public Boolean isVerbose() {
-        return Boolean.FALSE;
+        return "Y".equalsIgnoreCase(verbose);
     }
 }

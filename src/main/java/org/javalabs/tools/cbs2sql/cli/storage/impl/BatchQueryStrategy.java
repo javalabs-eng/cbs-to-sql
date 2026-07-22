@@ -8,6 +8,7 @@ import com.couchbase.client.java.query.QueryOptions;
 import com.couchbase.client.java.query.QueryResult;
 import java.util.List;
 import java.util.Map;
+import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
 import reactor.core.publisher.Flux;
 
 /**
@@ -32,6 +33,9 @@ public class BatchQueryStrategy extends QueryStrategy {
                 params.put(me.getKey(), me.getValue());
             }
             options.parameters(params);
+        }
+        if (query.isVerbose()) {
+            ConsoleWriter.println(String.format("Raw query: %s. Param(s): %s", query.getN1ql(), query.getParameters()));
         }
         QueryResult queryResult = storage().cluster().query(query.getN1ql(), options);
         
