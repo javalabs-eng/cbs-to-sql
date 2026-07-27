@@ -21,6 +21,28 @@ The tool is intended to support data migration, database modernization, schema d
 
 ---
 
+## How to Run
+
+The executable jar is present under `deploy` directory.
+
+1. Create a directory `cbs-2-sql` and a sub-directory `deploy` locally.
+2. Download the executable jar `cbs-to-sql-1.0.0-exec.jar` and place it under the `cbs-2-sql/deploy` directory.
+3. Download the cli script `cbs2sql` and place it under `cbs-2-sql` directory.
+
+Your final directory structure should look like below:
+
+```
+cbs-2-sql
+  |
+   ---- deploy
+  |       |
+  |        ------ cbs-to-sql-1.0.0-exec.jar
+   ---- cbs2sql
+ 
+```
+
+4. Navigate to `cbs-2-sql` directory and run `sh cbs2sql` 
+
 ## Available Commands
 
 | Command      | Description                                            |
