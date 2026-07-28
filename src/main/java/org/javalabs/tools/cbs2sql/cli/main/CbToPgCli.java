@@ -35,6 +35,33 @@ public class CbToPgCli {
      * @throws Exception if an unrecoverable error occurs during command execution
      */
     public static void main(String[] args) throws Exception {
+        try {
+            // If user passes the entire command through command line, execute it.
+            if (args.length > 2) {
+                // cb-export -c deusw1cbecpn000037 -h lpdecpdb0005347.phx.aexp.com -u clientsetupuser -w ERzGm99xUk76ehAt -b clientSetupDB -o /Users/schan280/Projects/cbs-to-sql/data -n type -d port
+                ExecutorBase cmd = HELPER.command(args[0]);
+                if (cmd == null) {
+                    ConsoleWriter.println(String.format("Invalid command name %s", args[0]));
+                    System.exit(-1);
+                }
+                String[] options = new String[args.length - 1];
+                System.arraycopy(args, 1, options, 0, options.length);
+
+                cmd.start(options);
+            }
+            else {
+                cli();
+            }
+            
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Due to bug in couchbase java client background threads are not gracefully shutting down...
+        // Runtime.getRuntime().halt(0);
+    }
+    
+    private static void cli() throws IOException {
         BufferedReader br = null;
         String line = null;
 
@@ -58,7 +85,8 @@ public class CbToPgCli {
                     // <openapi> help
                     if (line.equals("help")) {
                         ConsoleWriter.println(HELPER.welcome());
-                    } else {
+                    }
+                    else {
                         // Execute specific command and supply the options
                         // <openapi> swagger -create -routing-file routing-config.xml -model-lib /path/to/ninja-rest.jar -out-file ~/openapi.yaml
                         String[] arr = line.split(" ");
@@ -67,27 +95,29 @@ public class CbToPgCli {
 
                             // Print the options for the chosen command
                             ConsoleWriter.println(HELPER.options(arr[0]));
-                        } else if (arr.length > 2 && HELPER.commands().contains(arr[0]) && !arr[1].equals("help")) {
+                        }
+                        else if (arr.length > 2 && HELPER.commands().contains(arr[0]) && !arr[1].equals("help")) {
                             // Captured the arguments and possibly execute the command.
                             String[] options = new String[arr.length - 1];
                             System.arraycopy(arr, 1, options, 0, options.length);
 
                             ExecutorBase cmd = HELPER.command(arr[0]);
                             cmd.start(options);
-                        } else {
+                        }
+                        else {
                             if (line.trim().length() != 0) {
                                 ConsoleWriter.println("Invalid command. Type help to see the available commands");
                             }
                         }
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     ConsoleWriter.println(e.getMessage());
                 }
                 ConsoleWriter.prompt();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+        }
+        finally {
             if (br != null) {
                 br.close();
             }

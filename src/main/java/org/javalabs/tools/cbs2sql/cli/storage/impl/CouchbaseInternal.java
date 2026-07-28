@@ -10,7 +10,6 @@ import org.javalabs.tools.cbs2sql.cli.storage.config.CouchbaseConfig;
 import org.javalabs.tools.cbs2sql.cli.storage.config.ScopeConfig;
 import org.javalabs.tools.cbs2sql.cli.util.StopWatch;
 import com.couchbase.client.core.diagnostics.PingResult;
-import com.couchbase.client.core.env.ThresholdLoggingTracerConfig;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
@@ -25,8 +24,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Duration;
 import org.javalabs.tools.cbs2sql.cli.util.ConsoleWriter;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * Abstract Internal couchbase storage.
@@ -109,21 +106,29 @@ public abstract class CouchbaseInternal implements Storage {
         );
         LatencyStats.setDefaultPauseDetector(detector);
 
-        Scheduler scheduler = Schedulers.newParallel("cb-parallel", 2);
+        // Scheduler scheduler = Schedulers.newParallel("cb-parallel", 2);
         sharedEnv = ClusterEnvironment.builder()
-                .thresholdLoggingTracerConfig((ThresholdLoggingTracerConfig.Builder t) -> {
-                    t.queryThreshold(Duration.ofMinutes(1))
-                            .emitInterval(Duration.ofMinutes(2));
-                })
                 .timeoutConfig(timeout -> timeout.kvTimeout(Duration.ofSeconds(timeOut)))
-                .scheduler(scheduler)
-                .schedulerThreadCount(2) // -Dreactor.schedulers.defaultPoolSize=4
+                .transactionsConfig(txConfig -> txConfig
+                    // 1. Completely disable background threads (Optional)
+                        .cleanupConfig(cleanup -> cleanup
+                        .cleanupClientAttempts(false)       // Stops thread for this client's attempts
+                        .cleanupLostAttempts(false)         // Stops thread for cluster-wide lost attempts
+
+                    // 2. ALTERNATIVE: Keep threads but reduce polling frequency
+                        // .cleanupWindow(Duration.ofMinutes(15)) // Default is 1 minute (60s)
+                    )
+                )
+                .ioEnvironment(ioEnv -> ioEnv
+                    // Sets the number of I/O event loop threads (default is half of logical CPUs, max 8)
+                    .eventLoopThreadCount(2) 
+                )
                 .ioConfig(io -> {
-                    io
-                            .maxHttpConnections(2)
+                    io.maxHttpConnections(2)
                             .numKvConnections(2);
                 })
                 .build();
+        
 
         this.cluster = Cluster.connect(
                 MessageFormat.format(CONNECT_STRING, cbConfig.getHost()),
@@ -216,7 +221,7 @@ public abstract class CouchbaseInternal implements Storage {
     @Override
     public void windUp() {
         if (cluster != null) {
-            cluster.disconnect();
+            cluster.disconnect(Duration.ofSeconds(15));
             if ("Y".equalsIgnoreCase(cbConfig.getVerbose())) {
                 ConsoleWriter.println(String.format("Disconnected from cluster %s", cbConfig.getCluster().getName()));
             }

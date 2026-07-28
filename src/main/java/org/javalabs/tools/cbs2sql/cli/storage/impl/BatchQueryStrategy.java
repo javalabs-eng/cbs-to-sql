@@ -27,6 +27,8 @@ public class BatchQueryStrategy extends QueryStrategy {
         // Query will be in the form of: select count(*) from `{bucket}`.{scope}.{collection} where {condition1} {condition2} ...
         // 1. Execute the query
         QueryOptions options = QueryOptions.queryOptions();
+        options.maxParallelism(2);
+        
         if (query.getParameters() != null) {
             JsonObject params = JsonObject.create();
             for (Map.Entry<String, Object> me : query.getParameters().entrySet()) {
