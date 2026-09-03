@@ -6,7 +6,7 @@
 
     <groupId>org.javalabs.tools</groupId>
     <artifactId>cbs-to-sql</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     
     <name>cbs-to-sql</name>

@@ -80,8 +80,8 @@ public class ScriptHelper {
             dmlScript.append(SchemaGen.generateInsertScript(table, rows));
             
             if ("Y".equalsIgnoreCase(payload.getDump())) {
-                dump(table, ddlScript, dirName, "_ddl");
-                dump(table, dmlScript, dirName, "_dml");
+                dump(table, ddlScript, dirName, result.getDataset(), "_ddl");
+                dump(table, dmlScript, dirName, result.getDataset(), "_dml");
             }
             ddlScript.delete(0, ddlScript.length());
             dmlScript.delete(0, dmlScript.length());
@@ -94,9 +94,13 @@ public class ScriptHelper {
         }
     }
 
-    private void dump(Table table, StringBuilder script, String dirName, String postfix) {
+    private void dump(Table table, StringBuilder script, String dirName, String dataset, String postfix) {
         // Dump the ddl and dml script to the directory.
-        String filename = dirName + File.separator + table + postfix + ".sql";
+        File dsDir = new File(dirName, dataset);
+        if (! dsDir.exists()) {
+            dsDir.mkdirs();
+        }
+        String filename = dsDir.getAbsolutePath() + File.separator + table + postfix + ".sql";
 
         CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
         byte[] buff = new byte[8192];
@@ -153,7 +157,7 @@ public class ScriptHelper {
         dirName = dirName + File.separator + "script";
         File dir = new File(dirName);
         if (! dir.exists()) {
-            dir.mkdir();
+            dir.mkdirs();
         }
         return dir.getAbsolutePath();
     }

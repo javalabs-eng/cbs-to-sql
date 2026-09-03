@@ -17,13 +17,23 @@ import java.util.Map;
  */
 public class Result {
     
+    private String dataset;
     private Table table;
     private List<Map<String, Object>> data = new ArrayList<>(100);
     
     public Result() {}
 
-    public Result(Table table) {
+    public Result(String dataset, Table table) {
+        this.dataset = dataset;
         this.table = table;
+    }
+
+    public String getDataset() {
+        return dataset;
+    }
+
+    public void setDataset(String dataset) {
+        this.dataset = dataset;
     }
 
     public Table getTable() {

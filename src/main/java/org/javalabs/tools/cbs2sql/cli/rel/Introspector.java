@@ -217,7 +217,7 @@ public class Introspector {
 
         Collection<Table> tables = analyzer.analyze(payload);
         for (Table table : tables) {
-            results.add(new Result(table));
+            results.add(new Result(payload.getDataset(), table));
         }
         return results;
     }
@@ -251,13 +251,17 @@ public class Introspector {
 
         BufferedReader br = null;
         int lineNo = 0;
+        int tableCount = 0;
         File[] files = GeneralUtility.listEligibleDocs(payload);
 
         for (File file : files) {
             timer.start();
-            String ds = file.getName().substring(0, file.getName().indexOf("."));
+            tableCount = 0;
+            
+            String ds = file.getName().substring(0, file.getName().indexOf(".")).toLowerCase();
             payload.setDataset(ds);
-
+            
+            
             try {
                 lineNo = 1;
                 br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -271,7 +275,8 @@ public class Introspector {
                     for (Table table : tables) {
                         Result result = tableMapping.get(table.getName());
                         if (result == null) {
-                            tableMapping.put(table.getName(), (result = new Result(table)));
+                            tableMapping.put(table.getName(), (result = new Result(payload.getDataset(), table)));
+                            tableCount ++;
                         } else {
                             // Analyze the column and see if any new column got added, or change the column size ...
                             Boolean found = Boolean.FALSE;
@@ -326,7 +331,7 @@ public class Introspector {
                         "Analyzed dataset %s and file %s. Generated %d table(s). Elapsed time(ms): %d",
                         ds,
                         file.getAbsolutePath(),
-                        tableMapping.size(),
+                        tableCount,
                         timer.elapsedTimeMillis()));
             }
         }
